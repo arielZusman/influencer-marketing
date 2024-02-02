@@ -1,1 +1,23 @@
-<p>profile works!</p>
+@if(user) {
+<div class="profile-container">
+  <header>
+    <div class="profile-image">
+      <img alt="" [src]="user.picture" height="150" width="150" />
+    </div>
+    <section>
+      <div class="">
+        <h2>{{ user.username }}</h2>
+        @if(user.is_verified) {
+        <mat-icon class="verified">verified</mat-icon>
+        }
+      </div>
+      <div class="profile-stats">
+        <div>{{ user.followers | numberFormat }} followers</div>
+      </div>
+      <div class="profile-name">
+        {{ user.fullname }}
+      </div>
+    </section>
+  </header>
+</div>
+}

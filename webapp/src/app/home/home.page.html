@@ -1,1 +1,4 @@
-<app-search></app-search>
+<div class="search-container" [ngClass]="{'with-profile': selectedUser}">
+  <app-search (userSelected)="onUserSelected($event)"></app-search>
+</div>
+<app-profile [user]="selectedUser"></app-profile>

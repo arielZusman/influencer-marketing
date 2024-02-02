@@ -1,5 +1,11 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Output,
+  inject,
+} from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   MatAutocompleteActivatedEvent,
@@ -25,6 +31,7 @@ import { Router } from '@angular/router';
   standalone: true,
   templateUrl: './search.component.html',
   styleUrl: './search.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     MatFormFieldModule,
@@ -37,23 +44,38 @@ import { Router } from '@angular/router';
   ],
 })
 export class SearchComponent {
-  apiService = inject(ApiService);
-  router = inject(Router);
+  private apiService = inject(ApiService);
+  private router = inject(Router);
+  private isUserSelection = false;
+
+  @Output() userSelected = new EventEmitter<UserEntity>();
 
   userCtrl = new FormControl();
   filteredUsers: Observable<UserEntity[]> = this.userCtrl.valueChanges.pipe(
     debounceTime(200),
     distinctUntilChanged(),
     switchMap((val) => {
-      return this.apiService.findUsers(val);
+      if (this.isUserSelection) {
+        // If the selection is from the user, don't make the API call
+        this.isUserSelection = false;
+        return [];
+      } else {
+        return this.apiService.findUsers(val);
+      }
     }),
   );
 
   onSelected(ev: MatAutocompleteSelectedEvent) {
+    this.isUserSelection = true;
+    this.userSelected.emit(ev.option.value);
     this.router.navigate([], {
       queryParams: {
-        user: ev.option.value,
+        user: ev.option.value.username,
       },
     });
+  }
+
+  displayFn(user: UserEntity): string {
+    return user && user.username ? user.username : '';
   }
 }

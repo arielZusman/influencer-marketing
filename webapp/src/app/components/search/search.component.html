@@ -10,9 +10,10 @@
   <mat-autocomplete
     #auto="matAutocomplete"
     (optionSelected)="onSelected($event)"
+    [displayWith]="displayFn"
   >
     @for (user of filteredUsers | async; track user.user_id) {
-    <mat-option [value]="user.username">
+    <mat-option [value]="user">
       <div class="profile-card">
         <div class="profile-image">
           <img alt="" [src]="user.picture" height="35" width="35" />
