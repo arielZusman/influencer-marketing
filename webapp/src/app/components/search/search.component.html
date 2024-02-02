@@ -1,28 +1,31 @@
-  <mat-form-field style="width: 282px;">
-    <mat-label>Search User</mat-label>
-    <input
-      matInput
-      aria-label="User"
-      [matAutocomplete]="auto"
-      [formControl]="userCtrl"
-    />
-    <mat-icon matPrefix>search</mat-icon>
-    <mat-autocomplete #auto="matAutocomplete">
-      @for (user of filteredUsers | async; track user.user_id) {
-        <mat-option [value]="user.username">
-          <div class="profile-card">
-            <div class="profile-image">
-              <img alt="" [src]="user.picture" height="35" width="35" />
-            </div>
-            <div class="profile-info">
-              <div class="user-name">&#64;{{ user.username }}</div>
-              <div class="user-fullname">{{ user.fullname }}</div>
-            </div>
-            <div class="profile-followers">
-              {{ user.followers | numberFormat }}
-            </div>
-          </div>
-        </mat-option>
-      }
-    </mat-autocomplete>
-  </mat-form-field>
+<mat-form-field style="width: 282px">
+  <mat-label>Search User</mat-label>
+  <input
+    matInput
+    aria-label="User"
+    [matAutocomplete]="auto"
+    [formControl]="userCtrl"
+  />
+  <mat-icon matPrefix>search</mat-icon>
+  <mat-autocomplete
+    #auto="matAutocomplete"
+    (optionSelected)="onSelected($event)"
+  >
+    @for (user of filteredUsers | async; track user.user_id) {
+    <mat-option [value]="user.username">
+      <div class="profile-card">
+        <div class="profile-image">
+          <img alt="" [src]="user.picture" height="35" width="35" />
+        </div>
+        <div class="profile-info">
+          <div class="user-name">&#64;{{ user.username }}</div>
+          <div class="user-fullname">{{ user.fullname }}</div>
+        </div>
+        <div class="profile-followers">
+          {{ user.followers | numberFormat }}
+        </div>
+      </div>
+    </mat-option>
+    }
+  </mat-autocomplete>
+</mat-form-field>

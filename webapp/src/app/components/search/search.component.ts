@@ -1,12 +1,25 @@
 import { AsyncPipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatInputModule } from '@angular/material/input';
+import {
+  MatAutocompleteActivatedEvent,
+  MatAutocompleteModule,
+  MatAutocompleteSelectedEvent,
+} from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { Component } from '@angular/core';
-import { Observable, map, of, startWith } from 'rxjs';
-import { NumberFormatPipe } from '../../number-format.pipe';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { UserEntity } from '@influencer-marketing/shared';
+import {
+  Observable,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+} from 'rxjs';
+import { ApiService } from '../../api.service';
+import { NumberFormatPipe } from '../../number-format.pipe';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-search',
   standalone: true,
@@ -24,33 +37,23 @@ import { MatIconModule } from '@angular/material/icon';
   ],
 })
 export class SearchComponent {
-  filteredUsers: Observable<any[]>;
-  userCtrl = new FormControl();
+  apiService = inject(ApiService);
+  router = inject(Router);
 
-  constructor() {
-    this.filteredUsers = this.userCtrl.valueChanges.pipe(
-      startWith(''),
-      map((user) => this.users.filter((u) => u.username.includes(user))),
-    );
+  userCtrl = new FormControl();
+  filteredUsers: Observable<UserEntity[]> = this.userCtrl.valueChanges.pipe(
+    debounceTime(200),
+    distinctUntilChanged(),
+    switchMap((val) => {
+      return this.apiService.findUsers(val);
+    }),
+  );
+
+  onSelected(ev: MatAutocompleteSelectedEvent) {
+    this.router.navigate([], {
+      queryParams: {
+        user: ev.option.value,
+      },
+    });
   }
-  users = [
-    {
-      user_id: '186904952',
-      username: 'davidbeckham',
-      fullname: 'David Beckham',
-      picture:
-        'https://imgp.sptds.icu/v2?mb0KwpL92uYofJiSjDn1%2F6peL1lBwv3s%2BUvShHERlDb05bk9EAgW7oQoJCzCEnmG9tAyn4tbYQMP0iEqwjp1mRs%2FpNX%2FVwUU%2FtmNoUev76gy6QsoGjrPbAjxyAXlWbdJgNlJUwVYqIiahjW32e%2BqWA%3D%3D',
-      followers: 86730162,
-      is_verified: true,
-    },
-    {
-      user_id: '26832639',
-      username: 'davido',
-      fullname: 'Davido',
-      picture:
-        'https://imgp.sptds.icu/v2?mb0KwpL92uYofJiSjDn1%2F6peL1lBwv3s%2BUvShHERlDZlWmgYQw8mX1KSF3S3nA7nmP1RztitBy3ZgWz657sl6mMFMYoi5WtakYItfr%2Fzha0ywnmzAdOf%2B%2FyQ5%2BI0jOWEWwq5%2BhsabX0Nc9aXCBbcsw%3D%3D',
-      followers: 28780892,
-      is_verified: true,
-    },
-  ];
 }
