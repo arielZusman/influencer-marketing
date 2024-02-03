@@ -1,13 +1,13 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { UserEntity, Users } from '@influencer-marketing/shared';
-import { Observable, catchError, map } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { PostResponse, UserEntity, Users } from '@influencer-marketing/shared';
+import { Observable, map, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   findUsers(user: string, limit = 10): Observable<UserEntity[]> {
     user = user.trim();
@@ -20,7 +20,7 @@ export class ApiService {
       .pipe(map((res) => res.data || []));
   }
 
-  getUserPosts(user: string, endCursor = '') {
+  getUserPosts(user: string, endCursor?: string): Observable<PostResponse> {
     const options = {
       params: new HttpParams().set('user', user),
     };
@@ -29,6 +29,6 @@ export class ApiService {
       options.params.set('endCursor', endCursor);
     }
 
-    return this.http.get('api/user/feed');
+    return this.http.get<PostResponse>('api/user/feed', options);
   }
 }

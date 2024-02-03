@@ -24,3 +24,9 @@
   </header>
 </div>
 }
+
+<div class="grid grid-cols-3 gap-2 w-fit mx-auto">
+  @for (item of (posts$ | async)?.items; track item.code) {
+  <app-post [post]="item" />
+  }
+</div>

@@ -2,15 +2,12 @@ import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Output,
-  inject,
+  inject
 } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
-  MatAutocompleteActivatedEvent,
   MatAutocompleteModule,
-  MatAutocompleteSelectedEvent,
+  MatAutocompleteSelectedEvent
 } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,9 +19,8 @@ import {
   distinctUntilChanged,
   switchMap,
 } from 'rxjs';
-import { ApiService } from '../../api.service';
 import { NumberFormatPipe } from '../../number-format.pipe';
-import { Router } from '@angular/router';
+import { ProfileService } from '../../profile.service';
 
 @Component({
   selector: 'app-search',
@@ -44,11 +40,8 @@ import { Router } from '@angular/router';
   ],
 })
 export class SearchComponent {
-  private apiService = inject(ApiService);
-  private router = inject(Router);
+  private profileService = inject(ProfileService)
   private isUserSelection = false;
-
-  @Output() userSelected = new EventEmitter<UserEntity>();
 
   userCtrl = new FormControl();
   filteredUsers: Observable<UserEntity[]> = this.userCtrl.valueChanges.pipe(
@@ -60,19 +53,14 @@ export class SearchComponent {
         this.isUserSelection = false;
         return [];
       } else {
-        return this.apiService.findUsers(val);
+        return this.profileService.findUsers(val);
       }
     }),
   );
 
   onSelected(ev: MatAutocompleteSelectedEvent) {
     this.isUserSelection = true;
-    this.userSelected.emit(ev.option.value);
-    this.router.navigate([], {
-      queryParams: {
-        user: ev.option.value.username,
-      },
-    });
+    this.profileService.selectedUser = ev.option.value
   }
 
   displayFn(user: UserEntity): string {

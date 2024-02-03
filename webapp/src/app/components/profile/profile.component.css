@@ -2,3 +2,8 @@
   color: rgb(0, 149, 246);
 }
 
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(24rem, 1fr));
+  grid-gap: 2rem;
+}

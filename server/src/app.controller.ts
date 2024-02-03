@@ -1,6 +1,6 @@
+import { PostResponse, Users } from '@influencer-marketing/shared';
 import { Controller, Get, Query } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Users } from '@influencer-marketing/shared';
 
 @Controller('api')
 export class AppController {
@@ -19,9 +19,12 @@ export class AppController {
     return this.appService.findUsers(user, limit);
   }
 
-  @Get('user/ig/feed')
-  getUserInstagramFeed(@Query('id') id: string): Promise<any> {
-    return this.appService.getUserInstagramFeed(id);
+  @Get('user/feed')
+  getUserInstagramFeed(
+    @Query('user') user: string,
+    @Query('endCursor') endCursor: string,
+  ): Promise<PostResponse> {
+    return this.appService.getUserInstagramFeed(user, endCursor);
   }
 
   @Get('user/contacts')

@@ -1,1 +1,17 @@
-<p>post works!</p>
+@if (post) {
+<div class="relative w-72 h-72 overflow-hidden group">
+  <img [src]="post.display_url" alt="" class="w-full h-full object-cover" />
+  <div
+    class="absolute top-0 left-0 w-full h-full justify-center items-center hidden group-hover:flex text-white"
+  >
+    <div class="flex-grow flex justify-center items-center gap-2">
+      <img src="/assets/heart.svg" alt="" />
+      {{ post.like_count | numberFormat }}
+    </div>
+    <div class="flex-grow flex justify-center items-center gap-2">
+      <img src="/assets/comment.svg" alt="" />
+      {{ post.comment_count | numberFormat }}
+    </div>
+  </div>
+</div>
+}
