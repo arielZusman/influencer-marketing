@@ -14,15 +14,15 @@
   >
     @for (user of filteredUsers | async; track user.user_id) {
     <mat-option [value]="user">
-      <div class="profile-card">
-        <div class="profile-image">
-          <img alt="" [src]="user.picture" height="35" width="35" />
+      <div class="flex justify-between items-center gap-2 w-[250px]">
+        <div class="w-9 h-9 rounded-full overflow-hidden">
+          <img alt="" [src]="user.picture" class="h-full w-full object-cover" />
         </div>
-        <div class="profile-info">
-          <div class="user-name">&#64;{{ user.username }}</div>
-          <div class="user-fullname">{{ user.fullname }}</div>
+        <div class="grow leading-normal text-xs">
+          <div class="text-gray-600">&#64;{{ user.username }}</div>
+          <div class="text-gray-400">{{ user.fullname }}</div>
         </div>
-        <div class="profile-followers">
+        <div class="text-gray-400 text-sm">
           {{ user.followers | numberFormat }}
         </div>
       </div>

@@ -19,4 +19,16 @@ export class ApiService {
       .get<Users>('api/users', options)
       .pipe(map((res) => res.data || []));
   }
+
+  getUserPosts(user: string, endCursor = '') {
+    const options = {
+      params: new HttpParams().set('user', user),
+    };
+
+    if (endCursor) {
+      options.params.set('endCursor', endCursor);
+    }
+
+    return this.http.get('api/user/feed');
+  }
 }
