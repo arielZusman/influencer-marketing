@@ -1,4 +1,8 @@
-import { PostResponse, Users } from '@influencer-marketing/shared';
+import {
+  PostResponse,
+  UserProfileResponse,
+  Users,
+} from '@influencer-marketing/shared';
 import { Controller, Get, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 
@@ -23,7 +27,7 @@ export class AppController {
   }
 
   @Get('user/contacts')
-  getUserContacts(@Query('id') id: string): Promise<any> {
-    return this.appService.getUserContacts(id);
+  getUserContacts(@Query('user') user: string): Promise<UserProfileResponse> {
+    return this.appService.getUserContacts(user);
   }
 }

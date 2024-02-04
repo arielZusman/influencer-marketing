@@ -30,7 +30,8 @@ export class ProfileComponent {
 
   user$ = this.profileService.user$;
   posts$ = this.profileService.posts$;
-
+  contacts$ = this.profileService.contacts$
+  
   loadMore(endCursor: string) {
     this.profileService.loadMore(endCursor);
   }

@@ -1,4 +1,4 @@
-export type UserContactResponse = {
+export type UserProfileResponse = {
   success: boolean;
   user_profile: UserProfile;
 };

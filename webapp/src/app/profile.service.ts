@@ -3,7 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   ItemResponse,
   PostResponse,
+  UserProfileResponse,
   UserEntity,
+  Contact,
 } from '@influencer-marketing/shared';
 import {
   BehaviorSubject,
@@ -33,7 +35,9 @@ export class ProfileService {
   private query$ = this.activatedRoute.queryParams.pipe(
     map((param) => param['user']),
     distinctUntilChanged(),
-    tap(() => (this.resetPosts = true)),
+    tap(() => {
+      this.resetPosts = true;
+    }),
   );
   user$ = this.userSubject.asObservable();
   posts$ = combineLatest([this.query$, this.loadMoreSubject]).pipe(
@@ -63,8 +67,15 @@ export class ProfileService {
         end_cursor,
         status,
       };
-    }),
+    }, {} as PostResponse),
   );
+
+  contacts$: Observable<Contact[]> = this.query$.pipe(
+    switchMap(user => {
+      return this.apiService.getUserContacts(user)
+    }),
+    map(res => res.user_profile.contacts)
+  )
 
   constructor() {
     this.query$

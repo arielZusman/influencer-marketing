@@ -1,6 +1,6 @@
 export type Users = {
   success: boolean;
-  data?: UserEntity[] | null;
+  data: UserEntity[];
 };
 
 export type UserEntity = {
