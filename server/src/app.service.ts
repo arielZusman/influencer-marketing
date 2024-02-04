@@ -52,13 +52,10 @@ export class AppService {
     return result.data;
   }
 
-  getUserContacts(id: string): Promise<any> {
-    return this.httpService.axiosRef
-      .get(`exports/contacts?url=${id}`)
-      .then((res) => res.data);
-  }
-
-  getHello(): string {
-    return 'Hello World!';
+  async getUserContacts(id: string): Promise<any> {
+    const result = await this.httpService.axiosRef.get(
+      `exports/contacts?url=${id}`,
+    );
+    return result.data;
   }
 }
