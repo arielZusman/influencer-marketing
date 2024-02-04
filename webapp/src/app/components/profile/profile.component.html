@@ -1,10 +1,10 @@
-@if(user$ | async; as user) {
-<div class="flex justify-between items-center w-5/6 mx-auto pt-8">
-  <header class="flex gap-8">
+<div class="w-fit mx-auto">
+  @if(user$ | async; as user) {
+  <div class="flex gap-8 py-6">
     <div class="w-36 h-36 rounded-full overflow-hidden">
       <img alt="" [src]="user.picture" class="w-full h-full object-cover" />
     </div>
-    <section class="flex flex-col justify-evenly">
+    <div class="flex flex-col justify-evenly">
       <div class="flex items-center gap-2">
         <div class="text-2xl">{{ user.username }}</div>
         @if(user.is_verified) {
@@ -17,27 +17,27 @@
       <div>
         {{ user.fullname }}
       </div>
-    </section>
-    <section>
+    </div>
+    <div>
       <app-icon icon="tiktok" />
-    </section>
-  </header>
-</div>
-} @if(posts$ | async; as posts) {
-<div class="grid grid-cols-3 gap-2 w-fit mx-auto">
-  @for (item of posts.items; track item.code) {
-  <app-post [post]="item" />
-  }
-</div>
+    </div>
+  </div>
+  } @if(posts$ | async; as posts) {
+  <div class="grid grid-cols-3 gap-2 w-fit mx-auto">
+    @for (item of posts.items; track item.code) {
+    <app-post [post]="item" />
+    }
+  </div>
 
-@if(posts?.more_available && posts.end_cursor) {
-<div class="flex justify-center items-center py-4">
-  <button
-    mat-stroked-button
-    color="primary"
-    (click)="loadMore(posts.end_cursor)"
-  >
-    Load More
-  </button>
+  @if(posts?.more_available && posts.end_cursor) {
+  <div class="flex justify-center items-center py-4">
+    <button
+      mat-stroked-button
+      color="primary"
+      (click)="loadMore(posts.end_cursor)"
+    >
+      Load More
+    </button>
+  </div>
+  } }
 </div>
-} }
