@@ -27,12 +27,13 @@ export class ProfileService {
   private activatedRoute = inject(ActivatedRoute);
   private userSubject = new BehaviorSubject<UserEntity | null>(null);
   private isUserSubjectSet = false;
-  private endCursor: string = '';
+  private resetPosts = false;
 
   private loadMoreSubject = new BehaviorSubject<string>('');
   private query$ = this.activatedRoute.queryParams.pipe(
     map((param) => param['user']),
     distinctUntilChanged(),
+    tap(() => (this.resetPosts = true)),
   );
   user$ = this.userSubject.asObservable();
   posts$ = combineLatest([this.query$, this.loadMoreSubject]).pipe(
@@ -45,6 +46,17 @@ export class ProfileService {
       return this.getUserPosts(username, endCursor);
     }),
     scan((acc: PostResponse, { items, more_available, end_cursor, status }) => {
+      if (this.resetPosts) {
+        // Reset the results when query$ changes
+        this.resetPosts = false;
+        return {
+          items,
+          more_available,
+          end_cursor,
+          status,
+        };
+      }
+
       return {
         items: acc.items ? acc.items.concat(items) : items,
         more_available,
@@ -52,7 +64,6 @@ export class ProfileService {
         status,
       };
     }),
-    tap(console.log),
   );
 
   constructor() {
