@@ -18,10 +18,13 @@
         {{ user.fullname }}
       </div>
     </div>
-    @if(contacts$ | async; as contacts) { @for (item of contacts; track $index)
-    {
-    <p>{{ item.type }} : {{ item.formatted_value }}</p>
-    } }
+    @if(contacts$ | async; as contacts) {
+    <div>
+      @for (item of contacts; track $index) {
+      <p>{{ item.type }} : {{ item.formatted_value }}</p>
+      }
+    </div>
+    }
   </div>
   } @if(posts$ | async; as posts) {
   <div class="grid grid-cols-3 gap-2 w-fit mx-auto">
