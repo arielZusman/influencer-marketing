@@ -20,14 +20,10 @@ export class ApiService {
       .pipe(map((res) => res.data || []));
   }
 
-  getUserPosts(user: string, endCursor?: string): Observable<PostResponse> {
+  getUserPosts(user: string, endCursor = ''): Observable<PostResponse> {
     const options = {
-      params: new HttpParams().set('user', user),
+      params: new HttpParams().set('user', user).set('after', endCursor),
     };
-
-    if (endCursor) {
-      options.params.set('endCursor', endCursor);
-    }
 
     return this.http.get<PostResponse>('api/user/feed', options);
   }

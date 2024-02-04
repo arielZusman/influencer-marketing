@@ -5,6 +5,7 @@ import { NumberFormatPipe } from '../../number-format.pipe';
 import { ProfileService } from '../../profile.service';
 import { IconComponent } from '../icon/icon.component';
 import { PostComponent } from '../post/post.component';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-profile',
@@ -21,6 +22,7 @@ import { PostComponent } from '../post/post.component';
     IconComponent,
     AsyncPipe,
     PostComponent,
+    MatButtonModule,
   ],
 })
 export class ProfileComponent {
@@ -28,4 +30,8 @@ export class ProfileComponent {
 
   user$ = this.profileService.user$;
   posts$ = this.profileService.posts$;
+
+  loadMore(endCursor: string) {
+    this.profileService.loadMore(endCursor);
+  }
 }

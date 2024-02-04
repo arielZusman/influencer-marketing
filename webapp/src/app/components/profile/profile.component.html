@@ -23,10 +23,21 @@
     </section>
   </header>
 </div>
-}
-
+} @if(posts$ | async; as posts) {
 <div class="grid grid-cols-3 gap-2 w-fit mx-auto">
-  @for (item of (posts$ | async)?.items; track item.code) {
+  @for (item of posts.items; track item.code) {
   <app-post [post]="item" />
   }
 </div>
+
+@if(posts?.more_available && posts.end_cursor) {
+<div class="flex justify-center items-center py-4">
+  <button
+    mat-stroked-button
+    color="primary"
+    (click)="loadMore(posts.end_cursor)"
+  >
+    Load More
+  </button>
+</div>
+} }

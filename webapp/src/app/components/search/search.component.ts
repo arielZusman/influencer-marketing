@@ -53,7 +53,7 @@ export class SearchComponent {
         this.isUserSelection = false;
         return [];
       } else {
-        return this.profileService.findUsers(val);
+        return this.profileService.findUsers(val, 10);
       }
     }),
   );

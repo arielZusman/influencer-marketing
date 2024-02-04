@@ -5,7 +5,17 @@ import {
   PostResponse,
   UserEntity,
 } from '@influencer-marketing/shared';
-import { BehaviorSubject, Observable, of, scan, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  combineLatest,
+  distinctUntilChanged,
+  map,
+  of,
+  scan,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -19,44 +29,39 @@ export class ProfileService {
   private isUserSubjectSet = false;
   private endCursor: string = '';
 
-  user$ = this.userSubject.asObservable();
-  posts$ = this.activatedRoute.queryParams.pipe(
-    switchMap((params) => {
-      const username = params['user']
-        ? params['user']
-        : this.userSubject.getValue()?.username;
-      return this.getUserPosts(username, this.endCursor).pipe(
-        scan(
-          (
-            acc: Partial<PostResponse>,
-            { items, more_available, end_cursor, status },
-          ) => {
-            return {
-              items: acc.items ? acc.items.concat(items) : items,
-              more_available,
-              end_cursor,
-              status,
-            };
-          },
-          {
-            items: [] as ItemResponse[],
-          },
-        ),
-      );
-    }),
-    tap((posts) => {
-      if (posts?.end_cursor) {
-        this.endCursor = posts.end_cursor;
-      }
-    }),
+  private loadMoreSubject = new BehaviorSubject<string>('');
+  private query$ = this.activatedRoute.queryParams.pipe(
+    map((param) => param['user']),
+    distinctUntilChanged(),
   );
+  user$ = this.userSubject.asObservable();
+  posts$ = combineLatest([this.query$, this.loadMoreSubject]).pipe(
+    switchMap(([username, endCursor]) => {
+      username = username ? username : this.userSubject.getValue()?.username;
+
+      if (!username) {
+        return of({} as PostResponse);
+      }
+      return this.getUserPosts(username, endCursor);
+    }),
+    scan((acc: PostResponse, { items, more_available, end_cursor, status }) => {
+      return {
+        items: acc.items ? acc.items.concat(items) : items,
+        more_available,
+        end_cursor,
+        status,
+      };
+    }),
+    tap(console.log),
+  );
+
   constructor() {
-    this.activatedRoute.queryParams
+    this.query$
       .pipe(
-        switchMap((params) => {
-          if (!this.isUserSubjectSet && params['user']) {
-            const username = params['user'];
-            return this.findUsers(username);
+        switchMap((user) => {
+          if (!this.isUserSubjectSet && user) {
+            const username = user;
+            return this.findUsers(username, 1);
           }
           return of(null);
         }),
@@ -68,8 +73,8 @@ export class ProfileService {
       });
   }
 
-  findUsers(val: string): Observable<UserEntity[]> {
-    return this.apiService.findUsers(val);
+  findUsers(val: string, limit: number): Observable<UserEntity[]> {
+    return this.apiService.findUsers(val, limit);
   }
 
   getUserPosts(val: string, endCursor?: string) {
@@ -84,5 +89,9 @@ export class ProfileService {
         user: val.username,
       },
     });
+  }
+
+  loadMore(endCursor: string) {
+    this.loadMoreSubject.next(endCursor);
   }
 }
